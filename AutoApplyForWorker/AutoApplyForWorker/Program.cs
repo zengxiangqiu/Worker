@@ -69,7 +69,14 @@ namespace AutoApplyForWorker
                  });
                 var result = client.PostAsync(uri, content).Result.Content.ReadAsStringAsync();
                 Console.WriteLine(config.Index+"------"+ result.Result.ToString());
-                config.token = config.cookieContainer.GetCookies(new Uri("http://210.76.66.109:7006"))["Token"].ToString();
+                try
+                {
+                    config.token = config.cookieContainer.GetCookies(new Uri("http://210.76.66.109:7006"))["Token"].ToString();
+                }
+                catch
+                {
+                    config.token = "";
+                }
                 return result.Result.ToString().Contains("成功");
             }
         }
@@ -96,8 +103,21 @@ namespace AutoApplyForWorker
                 new KeyValuePair<string,string>("shareArguments","{}"),
                 });
                     var result = client.PostAsync(uri, content).Result.Content.ReadAsStringAsync();
-                    Console.WriteLine(result.Result.ToString());
-                    config.token = config.cookieContainer.GetCookies(new Uri("http://210.76.66.109:7006"))["Token"].ToString();
+                    Console.WriteLine(config.Index+"->"  + result.Result.ToString());
+                    try
+                    {
+                        config.token = config.cookieContainer.GetCookies(new Uri("http://210.76.66.109:7006"))["Token"].ToString();
+                    }
+                    catch
+                    {
+                        config.token = "";
+                    }
+                    finally
+                    {
+                        if (result.Result.Contains("超时"))
+                            login(config);
+                    }
+
                 }
             }
         }
